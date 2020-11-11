@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 final class CleanTest extends BaseTest
 {
-    protected function setUp()
+    protected function setUp():void
     {
         parent::setUp();
         $this->api = new CleanClient("token", "secret");
@@ -16,14 +16,14 @@ final class CleanTest extends BaseTest
     public function testToken()
     {
         $api = new CleanClient("123", "456");
-        $headers = $api->client->getConfig("headers");
+        $headers = $api->headers;
         $this->assertEquals($headers["Authorization"], "Token 123");
     }
 
     public function testSecret()
     {
         $api = new CleanClient("123", "456");
-        $headers = $api->client->getConfig("headers");
+        $headers = $api->headers;
         $this->assertEquals($headers["X-Secret"], "456");
     }
 
@@ -41,10 +41,9 @@ final class CleanTest extends BaseTest
 
     public function testCleanRequest()
     {
-        $this->mockResponse([]);
-        $this->api->clean("address", "москва");
         $expected = ["москва"];
-        $actual = $this->getLastRequest();
+        $this->mockResponse([$expected]);
+        $actual = $this->api->clean("address", "москва");
         $this->assertEquals($expected, $actual);
     }
 

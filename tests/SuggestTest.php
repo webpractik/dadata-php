@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 final class SuggestTest extends BaseTest
 {
-    protected function setUp()
+    protected function setUp():void
     {
         parent::setUp();
         $this->api = new SuggestClient("token");
@@ -16,7 +16,7 @@ final class SuggestTest extends BaseTest
     public function testToken()
     {
         $api = new SuggestClient("123");
-        $headers = $api->client->getConfig("headers");
+        $headers = $api->headers;
         $this->assertEquals($headers["Authorization"], "Token 123");
     }
 
@@ -36,10 +36,9 @@ final class SuggestTest extends BaseTest
 
     public function testFindAffiliatedRequest()
     {
-        $this->mockResponse([]);
-        $this->api->findAffiliated("7736207543", 5);
         $expected = ["query" => "7736207543", "count" => 5];
-        $actual = $this->getLastRequest();
+        $this->mockResponse(['suggestions' => $expected]);
+        $actual = $this->api->findAffiliated("7736207543", 5);
         $this->assertEquals($expected, $actual);
     }
 
@@ -69,13 +68,12 @@ final class SuggestTest extends BaseTest
 
     public function testFindByIdRequest()
     {
-        $this->mockResponse([]);
         $kwargs = [
             "kpp" => "773101001"
         ];
-        $this->api->findById("party", "7719402047", 5, $kwargs);
         $expected = ["query" => "7719402047", "count" => 5, "kpp" => "773101001"];
-        $actual = $this->getLastRequest();
+        $this->mockResponse(['suggestions' => $expected]);
+        $actual = $this->api->findById("party", "7719402047", 5, $kwargs);
         $this->assertEquals($expected, $actual);
     }
 
@@ -108,10 +106,9 @@ final class SuggestTest extends BaseTest
 
     public function testGeolocateRequest()
     {
-        $this->mockResponse([]);
-        $this->api->geolocate("address", 55.8782557, 37.65372, 200, 5);
         $expected = ["lat" => 55.8782557, "lon" => 37.65372, "radius_meters" => 200, "count" => 5];
-        $actual = $this->getLastRequest();
+        $this->mockResponse(['suggestions' => $expected]);
+        $actual = $this->api->geolocate("address", 55.8782557, 37.65372, 200, 5);
         $this->assertEquals($expected, $actual);
     }
 
@@ -166,13 +163,12 @@ final class SuggestTest extends BaseTest
 
     public function testSuggestRequest()
     {
-        $this->mockResponse([]);
         $kwargs = [
             "to_bound" => ["value" => "city"]
         ];
-        $this->api->suggest("address", "samara", 10, $kwargs);
         $expected = ["query" => "samara", "count" => 10, "to_bound" => ["value" => "city"]];
-        $actual = $this->getLastRequest();
+        $this->mockResponse(['suggestions' => $expected]);
+        $actual = $this->api->suggest("address", "samara", 10, $kwargs);
         $this->assertEquals($expected, $actual);
     }
 
